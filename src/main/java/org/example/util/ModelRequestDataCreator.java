@@ -11,7 +11,7 @@ public class ModelRequestDataCreator {
         requestData.setModel("gpt-3.5-turbo");
         requestData.setStream(true);
         requestData.setTemperature(1);
-        requestData.setTop_p(1);
+        requestData.setTop_p(0.5);
 
         return requestData;
     }

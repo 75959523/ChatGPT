@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 @Component
 public class GetUserInfo {
@@ -26,7 +28,10 @@ public class GetUserInfo {
         }
         param = param.substring(param.lastIndexOf("content") + 10 ,param.length() - 3);
         String header = request.getHeader("User-Agent");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Locale locale = new Locale("zh", "CN");
+        TimeZone timeZone = TimeZone.getTimeZone("Asia/Shanghai");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale);
+        sdf.setTimeZone(timeZone);
 
         UserInfo userInfo = new UserInfo();
         userInfo.setQuestion(param);

@@ -1,9 +1,6 @@
 package org.example;
 
-import com.alibaba.fastjson.JSON;
 import org.example.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-
 @Component
 @RequestMapping("api")
 public class ChatGPTService {
@@ -24,10 +20,10 @@ public class ChatGPTService {
     @Autowired
     GetUserInfo getUserInfo;
 
-    @PostMapping(value = "/chat")
+    @PostMapping(value = "chat")
     public void chat(HttpServletRequest request, HttpServletResponse response) {
 
-        ExecutorService executorService = ChatThreadPoolExecutor.newFixedThreadPool(10, 20, 5);
+        ExecutorService executorService = ChatThreadPoolExecutor.newFixedThreadPool(5, 20, 5);
 
         Future<List<String>> submit = executorService.submit(() -> {
             //获取请求参数
@@ -35,7 +31,7 @@ public class ChatGPTService {
             //用户信息入库
             getUserInfo.execute(request, param);
             //请求OpenAI接口
-            String execute = OpenAIClient.execute(JSON.toJSONString(ModelRequestDataCreator.execute(param)).replace("\\", ""));
+            String execute = OpenAIClient.execute(param);
             //处理返回结果 分块返回前端
             List<String> list = SplitChunks.execute(execute);
             return list;

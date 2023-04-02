@@ -1,5 +1,6 @@
 package org.example.util;
 
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +18,9 @@ public class OpenAIClient {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenAIClient.class);
 
-    public static String execute(String requestData) {
+    public static String execute(String param) {
 
+        logger.info("请求参数：" + param);
         StringBuilder content = null;
 
         try {
@@ -35,9 +37,10 @@ public class OpenAIClient {
             try {
                 long begin = System.currentTimeMillis();
                 outputStream = new DataOutputStream(connection.getOutputStream());
-                requestData = requestData.replace("\"messages\":\"","\"messages\":").replace("\",\"model\"",",\"model\"");
+                param = JSON.toJSONString(ModelRequestDataCreator.execute(param)).replace("\\", "");
+                param = param.replace("\"messages\":\"","\"messages\":").replace("\",\"model\"",",\"model\"");
                 /*使用 writeBytes 方法时，您可能会以不正确的编码格式（例如，不是 UTF-8）将 JSON 字符串转换为字节数组。这可能导致在服务器端解析 JSON 时出现问题。*/
-                outputStream.write(requestData.getBytes(StandardCharsets.UTF_8));
+                outputStream.write(param.getBytes(StandardCharsets.UTF_8));
                 outputStream.flush();
                 long end = System.currentTimeMillis();
                 logger.info("请求OpenAI耗时：" + (end - begin) + " ms");

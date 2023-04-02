@@ -6,8 +6,7 @@ public class ModelRequestData {
     private String model;
     private boolean stream;
     private int temperature;
-    private int top_p;
-
+    private double top_p;
 
     public String getMessages() {
         return messages;
@@ -41,11 +40,11 @@ public class ModelRequestData {
         this.temperature = temperature;
     }
 
-    public int getTop_p() {
+    public double getTop_p() {
         return top_p;
     }
 
-    public void setTop_p(int top_p) {
+    public void setTop_p(double top_p) {
         this.top_p = top_p;
     }
 }

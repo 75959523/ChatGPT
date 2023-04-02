@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 public class OpenAIClient {
 
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "";
     private static final String TARGET_URL = "https://api.openai.com/v1/chat/completions";
 
     private static final Logger logger = LoggerFactory.getLogger(OpenAIClient.class);

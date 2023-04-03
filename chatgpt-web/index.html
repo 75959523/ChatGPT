@@ -1297,7 +1297,7 @@
                 <div class="divider"></div>
                 <div class="links">
                     <a href="https://github.com/75959523/ChatGPT" target="_blank"
-                        rel="noopener noreferrer">github</a>
+                        rel="noopener noreferrer">github地址</a>
                 </div>
             </div>
         </nav>
@@ -3339,9 +3339,9 @@
         const streamGen = async (long) => {
             controller = new AbortController();
             controllerId = setTimeout(() => {
-                notyf.error("请求超时，请稍后重试！");
+                notyf.error("请求超时，请稍后重试！一次对话限制处理时间120秒");
                 stopLoading();
-            }, 30000);
+            }, 120000);
             let headers = {"Content-Type": "application/json"};
             if (customAPIKey) headers["Authorization"] = "Bearer " + customAPIKey;
             let isRefresh = refreshIdx !== void 0;
@@ -3402,7 +3402,7 @@
                     } else if (res.status === 429 && !res.statusText) {
                         notyf.error("API使用超出限额，请检查您的账单！");
                     } else {
-                        notyf.error("触发API调用频率限制，请稍后重试！");
+                        notyf.error("请清空聊天记录，然后重新提问，或者将连续对话选项关闭");
                     }
                     stopLoading();
                     return;

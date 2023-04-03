@@ -33,8 +33,7 @@ public class ChatGPTService {
             //请求OpenAI接口
             String execute = OpenAIClient.execute(param);
             //处理返回结果 分块返回前端
-            List<String> list = SplitChunks.execute(execute);
-            return list;
+            return SplitChunks.execute(execute);
         });
 
         response.setHeader("Transfer-Encoding", "chunked");

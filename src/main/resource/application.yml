@@ -9,4 +9,11 @@ spring:
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+#logging:
+#  level:
+#    org:
+#      example:
+#        feign: debug
+
+
 

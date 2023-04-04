@@ -45,7 +45,6 @@ public class OpenAIClient {
                 long end = System.currentTimeMillis();
                 logger.info("请求OpenAI耗时：" + (end - begin) + " ms");
 
-
 //                long begin1 = System.currentTimeMillis();
 //                int responseCode = connection.getResponseCode();
 //                long end1 = System.currentTimeMillis();

@@ -1,6 +1,5 @@
 package org.example.util;
 
-
 import java.util.concurrent.*;
 
 public class ChatThreadPoolExecutor {

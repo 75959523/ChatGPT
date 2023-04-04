@@ -1352,7 +1352,7 @@
 <!--                                </select>-->
 <!--                            </div>-->
 <!--                        </div>-->
-                        <textarea class="inputTextClass areaTextClass" placeholder="使用原生JS和Java编写 仅用于学习目的 服务器资源有限 最大并发连接数限制为20 为了避免角色性格和回答质量的极端值导致长时间无响应 相关数值固定为中性"
+                        <textarea class="inputTextClass areaTextClass" placeholder="使用原生JS和Java编写 仅用于学习目的 无法使用请尝试更换浏览器 手机用户推荐使用Google Safari 请不要将此链接在群组中分享 大陆地区可能会被封禁 仅在小范围内使用 服务器资源有限 最大并发连接数限制为20 为了避免角色性格和回答质量的极端值导致长时间无响应 相关数值固定为中性"
                             id="systemInput"></textarea>
                     </div>
                     <div>
@@ -3339,9 +3339,9 @@
         const streamGen = async (long) => {
             controller = new AbortController();
             controllerId = setTimeout(() => {
-                notyf.error("请求超时，请稍后重试！一次对话限制处理时间120秒");
+                notyf.error("请求超时，请稍后重试！一次对话限制处理时间180秒");
                 stopLoading();
-            }, 120000);
+            }, 180000);
             let headers = {"Content-Type": "application/json"};
             if (customAPIKey) headers["Authorization"] = "Bearer " + customAPIKey;
             let isRefresh = refreshIdx !== void 0;

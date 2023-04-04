@@ -7,6 +7,8 @@ public class UserInfo {
     private String address;
     private  String header;
     private String createTime;
+    private String uuid;
+    private String answer;
 
     public int getId() {
         return id;
@@ -46,5 +48,21 @@ public class UserInfo {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

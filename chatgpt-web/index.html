@@ -1295,9 +1295,13 @@
                     </div>
                 </div>
                 <div class="divider"></div>
+<!--                <div class="links">-->
+<!--                    <a href="https://long.tools/api/getClear" target="_blank"-->
+<!--                       rel="noopener noreferrer">提问历史</a>-->
+<!--                </div>-->
                 <div class="links">
                     <a href="https://github.com/75959523/ChatGPT" target="_blank"
-                        rel="noopener noreferrer">github地址</a>
+                        rel="noopener noreferrer">github</a>
                 </div>
             </div>
         </nav>
@@ -1352,20 +1356,12 @@
 <!--                                </select>-->
 <!--                            </div>-->
 <!--                        </div>-->
-                        <textarea class="inputTextClass areaTextClass" placeholder="使用原生JS和Java编写 仅用于学习目的 无法使用请尝试更换浏览器 手机用户推荐使用Google Safari 请不要将此链接在群组中分享 大陆地区可能会被封禁 仅在小范围内使用 服务器资源有限 最大并发连接数限制为20 为了避免角色性格和回答质量的极端值导致长时间无响应 相关数值固定为中性"
+                        <textarea class="inputTextClass areaTextClass" placeholder="无法使用请尝试更换浏览器 手机推荐使用Google Safari 角色性格、回答质量默认居中 调整为极端值会出现胡言乱语或者响应迟钝"
                             id="systemInput"></textarea>
                     </div>
                     <div>
-                        <span>打字机速度</span>
-                        <input type="range" id="textSpeed" min="0" max="100" value="40" step="1" />
-                        <div class="selectDef">
-                            <span>慢</span>
-                            <span>快</span>
-                        </div>
-                    </div>
-                    <div>
                         <span>角色性格</span>
-                        <input type="range" id="top_p" min="0" max="1" value="0.5" step="0.05" disabled />
+                        <input type="range" id="top_p" min="0" max="1" value="0.5" step="0.1" />
                         <div class="selectDef">
                             <span>准确严谨</span>
                             <span>灵活创新</span>
@@ -1373,10 +1369,18 @@
                     </div>
                     <div>
                         <span>回答质量</span>
-                        <input type="range" id="temp" min="0" max="2" value="1" step="0.05" disabled />
+                        <input type="range" id="temp" min="0" max="2" value="1" step="0.2" />
                         <div class="selectDef">
                             <span>重复刻板</span>
                             <span>胡言乱语</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span>打字机速度</span>
+                        <input type="range" id="textSpeed" min="0" max="100" value="50" step="1" />
+                        <div class="selectDef">
+                            <span>慢</span>
+                            <span>快</span>
                         </div>
                     </div>
 
@@ -3380,14 +3384,14 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    // body: JSON.stringify({
-                    //     messages: dataSlice,
-                    //     model: modelVersion,
-                    //     stream: true,
-                    //     temperature: roleTemp,
-                    //     top_p: roleNature
-                    // }),
-                    body: JSON.stringify(dataSlice),
+                    body: JSON.stringify({
+                        messages: dataSlice,
+                        model: modelVersion,
+                        stream: true,
+                        temperature: roleTemp,
+                        top_p: roleNature
+                    }),
+                    //body: JSON.stringify(dataSlice),
                     signal: controller.signal
                 });
                 clearTimeout(controllerId);

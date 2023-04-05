@@ -38,7 +38,9 @@ public class ChatGptThreadPoolExecutor {
     }
 
     public <T> Future<T> submit(Callable<T> task) {
-        return executor.submit(task);
+        RunnableFuture<T> futureTask = new FutureTask<>(task);
+        executor.execute(futureTask);
+        return futureTask;
     }
 
     public void shutdown() {

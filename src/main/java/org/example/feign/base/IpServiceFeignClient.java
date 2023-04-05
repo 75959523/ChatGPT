@@ -11,5 +11,4 @@ public interface IpServiceFeignClient {
 
     @GetMapping("/{ip}")
     ResponseEntity<IpInfo> getIPInfo(@PathVariable String ipAddress);
-
 }

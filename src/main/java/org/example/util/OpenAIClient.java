@@ -32,8 +32,8 @@ public class OpenAIClient {
 
             long begin = System.currentTimeMillis();
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
-                param = JSON.toJSONString(ModelRequestDataCreator.execute(param)).replace("\\", "");
-                param = param.replace("\"messages\":\"", "\"messages\":").replace("\",\"model\"", ",\"model\"");
+                //param = JSON.toJSONString(ModelRequestDataCreator.execute(param)).replace("\\", "");
+                //param = param.replace("\"messages\":\"", "\"messages\":").replace("\",\"model\"", ",\"model\"");
                 outputStream.write(param.getBytes(StandardCharsets.UTF_8));
                 outputStream.flush();
             }

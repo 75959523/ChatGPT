@@ -35,6 +35,7 @@ public class GetUserInfo {
     private static final Logger logger = LoggerFactory.getLogger(GetUserInfo.class);
 
     public int execute(HttpServletRequest request, String param, String result) {
+        String header = request.getHeader("User-Agent");
         String ipAddress = getClientIpAddress(request);
 
         // 根据请求ip获取位置相关信息
@@ -73,10 +74,11 @@ public class GetUserInfo {
             }
         });
 
-        param = param.substring(param.lastIndexOf("content") + 10, param.length() - 3);
+        //param = param.substring(param.lastIndexOf("content") + 10, param.length() - 3);
+        param = param.substring(param.lastIndexOf("content") + 10, param.lastIndexOf("model") - 5);
         userInfo.setQuestion(param);
         userInfo.setAddress(ipAddress);
-        userInfo.setHeader(request.getHeader("User-Agent"));
+        userInfo.setHeader(header);
         userInfo.setCreateTime(sdf.format(new Date()));
         userInfo.setAnswer(GetAnswer.extractContent(result));
 

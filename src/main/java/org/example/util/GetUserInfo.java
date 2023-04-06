@@ -23,7 +23,7 @@ public class GetUserInfo {
     @Autowired
     IpServiceFeignClient ipServiceFeignClient;
 
-    private final SimpleDateFormat sdf;
+    public static SimpleDateFormat sdf = null;
 
     public GetUserInfo() {
         Locale locale = new Locale("zh", "CN");
@@ -85,7 +85,7 @@ public class GetUserInfo {
         return databaseService.addUserInfo(userInfo);
     }
 
-    private String getClientIpAddress(HttpServletRequest request) {
+    public static String getClientIpAddress(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-Forwarded-For");
         if (ipAddress == null || ipAddress.isEmpty()) {
             ipAddress = request.getHeader("X-Real-IP");

@@ -45,6 +45,8 @@
             width: 100%;
             height: 50px;
             padding: 12px 0;
+            position: relative;
+            z-index: 10;
         }
 
         .top_menu .toggler {
@@ -56,6 +58,9 @@
             padding: 5px 7px;
             border-radius: 4px;
             cursor: pointer;
+
+            z-index: 50;
+
         }
 
         .top_menu .toggler:hover {
@@ -90,11 +95,15 @@
             color: #909090;
             font-size: 20px;
             line-height: 26px;
+
         }
 
         .messages {
             position: relative;
-            height: calc(100% - 117px);
+            height: calc(100% - 137px); /* 减小高度以缩小覆盖范围 */
+            padding-top: 35px; /* 在元素顶部添加10像素的内边距 */
+            bottom: 35px; /* 将元素向上移动20像素 */
+
             overflow-x: hidden;
             overflow-y: auto;
         }
@@ -283,7 +292,7 @@
             cursor: pointer;
             border-radius: 3px;
             position: sticky;
-            bottom: 2px;
+            bottom: 12px;
             justify-content: center;
             align-items: center;
         }
@@ -297,12 +306,11 @@
         }
 
         .bottom_wrapper {
-            position: relative;
+            position: absolute;
             width: 100%;
             background-color: #fff;
             padding: 10px 10px;
-            position: absolute;
-            bottom: 0;
+            bottom: 60px; /* 将此值更改为所需的上移距离 */
         }
 
         .bottom_wrapper .message_input_wrapper {
@@ -358,12 +366,83 @@
             cursor: not-allowed;
         }
 
+        .bottom_wrapper_copy {
+            position: absolute;
+            width: 100%;
+            background-color: #fff;
+            padding: 10px 10px;
+            bottom: 1px; /* 将此值更改为所需的上移距离 */
+
+        }
+
+        .bottom_wrapper_copy .message_input_wrapper_copy {
+            border: none;
+            width: calc(100% - 143px);
+            position: relative;
+            text-align: left;
+        }
+
+        .bottom_wrapper_copy .message_input_wrapper_copy .message_input_text_copy {
+            border-radius: 4px;
+            border: none;
+            outline: none;
+            resize: none;
+            background: #f6f6f6;
+            color: #24292f;
+            height: 47px;
+            font-size: 16px;
+            max-height: 200px;
+            padding: 13px 0 13px 16px;
+            width: 100%;
+            display: block;
+            transition: background 0.3s;
+        }
+
+        .bottom_wrapper_copy .message_input_wrapper_copy .message_input_text_copy:focus {
+            background: #f0f0f0;
+        }
+
+        .bottom_wrapper_copy .message_input_wrapper_copy .message_input_text_copy::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        #sendbutton_copy {
+            width: 80px;
+            height: 47px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 3px;
+            background-color: #b8da8b;
+            border: none;
+            padding: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s linear;
+            text-align: center;
+            float: right;
+            position: absolute;
+            right: 65px;
+            bottom: 10px;
+            cursor: not-allowed;
+        }
+
         .activeSendBtn {
             background-color: #99c959 !important;
             cursor: pointer !important;
         }
 
         .activeSendBtn:hover {
+            background-color: #90c050 !important;
+        }
+
+        .activeSendBtnImg {
+            background-color: #99c959 !important;
+            cursor: pointer !important;
+        }
+
+        .activeSendBtnImg:hover {
             background-color: #90c050 !important;
         }
 
@@ -384,6 +463,22 @@
             text-align: center;
         }
 
+        #clearConv_copy {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            width: 47px;
+            height: 47px;
+            font-size: 16px;
+            display: inline-block;
+            border-radius: 3px;
+            background-color: #909090;
+            border: 2px solid #909090;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s linear;
+            text-align: center;
+        }
         #clearConv:hover {
             background-color: gray;
             border: 2px solid gray;
@@ -461,6 +556,9 @@
             border: none;
             background-color: transparent;
             border-radius: 4px;
+
+            z-index: 50;
+
         }
 
         #setting:hover {
@@ -1511,6 +1609,7 @@
                     <use xlink:href="#stopResIcon" />
                 </svg>停止</div>
         </div>
+
         <div class="bottom_wrapper clearfix">
             <div class="message_input_wrapper">
                 <textarea class="message_input_text" spellcheck="false" placeholder="来问点什么吧" id="chatinput"></textarea>
@@ -1543,6 +1642,28 @@
                     <use xlink:href="#deleteIcon" />
                 </svg></button>
         </div>
+
+        <div class="bottom_wrapper_copy clearfix">
+            <div class="message_input_wrapper_copy">
+                <textarea class="message_input_text_copy" spellcheck="false" placeholder="想看什么图" id="chatinput_copy"></textarea>
+                <div id="voiceRec_copy" style="display:none;">
+
+                    <div id="voiceRecSetting_copy">
+                        <select id="select_language_copy" style="margin-bottom: 4px;"></select>
+                        <select id="select_dialect_copy"></select>
+                    </div>
+                </div>
+            </div>
+            <button class="loaded" id="sendbutton_copy">
+                <span>发送</span>
+                <svg style="margin:0 auto;height:40px;width:100%;">
+                    <use xlink:href="#loadingIcon" />
+                </svg>
+            </button>
+        </div>
+
+
+
     </div>
     <link rel="stylesheet" href="//cdn.staticfile.org/notyf/3.10.0/notyf.min.css">
     <script src="//cdn.staticfile.org/notyf/3.10.0/notyf.min.js"></script>
@@ -1575,7 +1696,10 @@
         const chatlog = document.getElementById("chatlog");
         const stopEle = document.getElementById("stopChat");
         const sendBtnEle = document.getElementById("sendbutton");
+        const sendBtnEleImg = document.getElementById("sendbutton_copy");
         const textarea = document.getElementById("chatinput");
+        const textareaImg = document.getElementById("chatinput_copy");
+
         const settingEle = document.getElementById("setting");
         const dialogEle = document.getElementById("setDialog");
         //const systemEle = document.getElementById("systemInput");
@@ -1603,6 +1727,7 @@
         let recing = false;
         let toggleRecEv;
         textarea.focus();
+        textareaImg.focus();
         const textInputEvent = () => {
             if (!loading) {
                 if (textarea.value.trim().length) {
@@ -1614,7 +1739,20 @@
             textarea.style.height = "47px";
             textarea.style.height = textarea.scrollHeight + "px";
         };
+        const textInputEventImg = () => {
+            if (!loadingImg) {
+                if (textareaImg.value.trim().length) {
+                    sendBtnEleImg.classList.add("activeSendBtnImg");
+                } else {
+                    sendBtnEleImg.classList.remove("activeSendBtnImg");
+                }
+            }
+            textareaImg.style.height = "47px";
+            textareaImg.style.height = textareaImg.scrollHeight + "px";
+        };
         textarea.oninput = textInputEvent;
+        textareaImg.oninput = textInputEventImg;
+
         if (supportRec) {
             noRecTip.style.display = "none";
             yesRec.style.display = "block";
@@ -2277,7 +2415,10 @@
     <script src="//npm.elemecdn.com/markdown-it-link-attributes@4.0.1/dist/markdown-it-link-attributes.min.js"></script>
     <script>
         const API_URL = "http://192.168.3.22:8080/api/chat";
+        const API_URL_IMG = "http://192.168.3.22:8080/api/image";
+
         let loading = false;
+        let loadingImg = false;
         let presetRoleData = {
             "normal": "你是一个乐于助人的助手，尽量简明扼要地回答",
             "cat": "你是一个可爱的猫娘，每句话结尾都要带个'喵'",
@@ -3339,6 +3480,7 @@
         let controllerId;
         let refreshIdx;
         let currentResEle;
+        let currentResEleImg;
         let progressData = "";
         const streamGen = async (long) => {
             controller = new AbortController();
@@ -3484,12 +3626,119 @@
                 stopLoading();
             }
         };
+        const streamGenImg = async (long) => {
+            controller = new AbortController();
+            controllerId = setTimeout(() => {
+                notyf.error("请求超时，请稍后重试！一次对话限制处理时间180秒");
+                stopLoading();
+            }, 180000);
+            let headers = {"Content-Type": "application/json"};
+            if (customAPIKey) headers["Authorization"] = "Bearer " + customAPIKey;
+            let isRefresh = refreshIdx !== void 0;
+            if (isRefresh) {
+                currentResEleImg = chatlog.children[systemRole ? refreshIdx - 1 : refreshIdx];
+            } else if (!currentResEleImg) {
+                currentResEleImg = createConvEle("response");
+                currentResEleImg.children[0].innerHTML = "<br />";
+                currentResEleImg.dataset.loading = true;
+                scrollToBottom();
+            }
+            let idx = isRefresh ? refreshIdx : data.length;
+            if (existVoice && enableAutoVoice && !long) {
+                if (isRefresh) {
+                    endSpeak();
+                    autoVoiceDataIdx = currentVoiceIdx = idx;
+                } else if (currentVoiceIdx !== data.length) {
+                    endSpeak();
+                    autoVoiceDataIdx = currentVoiceIdx = idx;
+                }
+            }
+            let dataSlice;
+            idx = isRefresh ? refreshIdx : data.length - 1;
+            dataSlice = [data[idx - 1], data[idx]];
+            dataSlice = data.slice(idx);
+            try {
+                const res = await fetch(API_URL_IMG, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataSlice),
+
+                    signal: controller.signal
+                });
+                clearTimeout(controllerId);
+                controllerId = void 0;
+                if (res.status !== 200) {
+                    if (res.status === 401) {
+                        notyf.error("API key错误，请打开设置输入正确的API key！")
+                    } else if (res.status === 400) {
+                        notyf.error("请求内容过大，请删除部分对话或打开设置关闭连续对话！");
+                    } else if (res.status === 404) {
+                        notyf.error("无权使用此模型，请打开设置选择其他GPT模型！");
+                    } else if (res.status === 429 && !res.statusText) {
+                        notyf.error("API使用超出限额，请检查您的账单！");
+                    } else {
+                        notyf.error("请清空聊天记录，然后重新提问，或者将连续对话选项关闭");
+                    }
+                    stopLoading();
+                    return;
+                }
+                const decoder = new TextDecoder();
+                const reader = res.body.getReader();
+                const readChunk = async () => {
+                    return reader.read().then(async ({value, done}) => {
+                        if (!done) {
+                            value = decoder.decode(value);
+                            let chunks = value.split(/\n{2}/g);
+                            chunks = chunks.filter(item => {
+                                return item.trim();
+                            });
+
+                            for (let i = 0; i < chunks.length; i++) {
+
+                                const chunk = chunks[i]
+                                const strippedStr = chunk.substring(1, chunk.length - 1);
+                                const urls = strippedStr.split(', ');
+
+                                urls.forEach(url => {
+                                    const img = document.createElement('img');
+                                    img.src = url;
+                                    img.alt = '图片加载失败';
+                                    img.style.width = '300px';
+                                    img.style.height = '300px';
+                                    img.style.margin = '10px';
+
+                                    currentResEleImg.children[0].appendChild(img);
+                                });
+                            }
+                            stopLoading(false);
+
+                        }
+                    });
+                };
+                await readChunk();
+            } catch (e) {
+
+                stopLoading();
+            }
+        };
+
+
         const loadAction = (bool) => {
             loading = bool;
             sendBtnEle.disabled = bool;
             sendBtnEle.className = bool ? " loading" : "loaded";
             stopEle.style.display = bool ? "flex" : "none";
             textInputEvent();
+        }
+
+        const loadActionImg = (bool) => {
+            loading = bool;
+            sendBtnEleImg.disabled = bool;
+            sendBtnEleImg.className = bool ? " loading" : "loaded";
+            stopEle.style.display = bool ? "flex" : "none";
+            textInputEventImg();
         }
         const stopLoading = (abort = true) => {
             stopEle.style.display = "none";
@@ -3508,10 +3757,22 @@
             updateChats();
             controllerId = delayId = refreshIdx = void 0;
             autoVoiceIdx = 0;
-            currentResEle.dataset.loading = false;
-            currentResEle = null;
+
+            if(currentResEle != undefined) {
+                currentResEle.dataset.loading = false;
+                currentResEle = null;
+                loadAction(false);
+
+            }
+
+            if(currentResEleImg != undefined) {
+                currentResEleImg.dataset.loading = false;
+                currentResEleImg = null;
+                loadActionImg(false);
+
+            }
+
             progressData = "";
-            loadAction(false);
         }
         const generateText = async (message) => {
             loadAction(true);
@@ -3525,6 +3786,19 @@
             updateChats();
             scrollToBottom();
             await streamGen();
+        };
+        const generateTextImg = async (message) => {
+            loadActionImg(true);
+            let requestEle = createConvEle("request");
+            requestEle.children[0].innerHTML = md.render(message);
+            data.push({role: "user", content: message});
+            if (chatsData[activeChatIdx].name === "新的会话") {
+                chatsData[activeChatIdx].name = message;
+                chatListEle.children[activeChatIdx].children[1].textContent = message;
+            }
+            updateChats();
+            scrollToBottom();
+            await streamGenImg();
         };
         textarea.onkeydown = (e) => {
             if (e.keyCode === 13 && !e.shiftKey) {
@@ -3544,7 +3818,21 @@
                 generateText(message);
             }
         };
+        const getFuncImg = function () {
+            if (recing) {
+                toggleRecEv();
+            }
+            let message = textareaImg.value.trim();
+            if (message.length !== 0) {
+                if (loading === true) return;
+                textareaImg.value = "";
+                textareaImg.style.height = "47px";
+                generateTextImg(message);
+            }
+        };
+
         sendBtnEle.onclick = genFunc;
+        sendBtnEleImg.onclick = getFuncImg;
         stopEle.onclick = stopLoading;
         document.getElementById("clearConv").onclick = () => {
             if (!loading && confirmAction("是否清空会话?")) {

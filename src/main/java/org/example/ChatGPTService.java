@@ -1,18 +1,21 @@
 package org.example;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.example.entity.ImageRequestData;
+import org.example.entity.UserInfo;
 import org.example.jdbc.DatabaseService;
+import org.example.openai.OpenAIClient;
 import org.example.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.*;
 import java.util.concurrent.Future;
 
 @Component
@@ -27,18 +30,18 @@ public class ChatGPTService {
 
     @PostMapping("chat")
     public void chat(HttpServletRequest request, HttpServletResponse response) {
-        String param = BufferedReaderParam.execute(request);
+        String requestParam = BufferedReaderParam.execute(request);
 
         Future<String> submit = ChatGptThreadPoolExecutor.getInstance().submit(() -> {
             // 请求OpenAI接口
-            return OpenAIClient.execute(param);
+            return OpenAIClient.chat(requestParam);
         });
 
         ChatGptThreadPoolExecutor.getInstance().execute(() -> {
             try {
                 String finalResult = submit.get();
                 // 采集用户信息
-                getUserInfo.execute(request, param, finalResult);
+                getUserInfo.execute(request, requestParam, finalResult);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -72,5 +75,48 @@ public class ChatGPTService {
     @ResponseBody
     public String getUserInfoClear(){
         return JSON.toJSONString(databaseService.getUserInfoClear(), SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+    }
+
+    @GetMapping(value = "model", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String getModel(){
+        return JSON.toJSONString(OpenAIClient.model(), SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+    }
+
+    @PostMapping(value = "image", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String getImage(HttpServletRequest request){
+        String requestParam = BufferedReaderParam.execute(request);
+
+        requestParam = requestParam.substring(requestParam.lastIndexOf("content") + 10, requestParam.lastIndexOf("}]") - 1);
+
+        ImageRequestData imageRequestData = new ImageRequestData();
+        imageRequestData.setPrompt(requestParam);
+        imageRequestData.setN(2);
+        imageRequestData.setSize("1024x1024");
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setQuestion(requestParam);
+        userInfo.setAddress(GetUserInfo.getClientIpAddress(request));
+        userInfo.setCreateTime(GetUserInfo.sdf.format(new Date()));
+        ChatGptThreadPoolExecutor.getInstance().execute(() -> {
+            try {
+                databaseService.addUserInfo(userInfo);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        requestParam = JSON.toJSONString(imageRequestData).replace("\\", "");
+        String image = OpenAIClient.image(requestParam);
+        JSONObject jsonObject = JSONObject.parseObject(image);
+        List<Map<String,Object>> stringList = (List<Map<String,Object>>) jsonObject.get("data");
+
+        String[] arr = new String[stringList.size()];
+        for(int i=0;i<stringList.size();i++){
+            arr[i] = stringList.get(i).get("url").toString();
+        }
+
+        return Arrays.toString(arr);
     }
 }

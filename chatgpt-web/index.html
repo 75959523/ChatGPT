@@ -371,7 +371,7 @@
             width: 100%;
             background-color: #fff;
             padding: 10px 10px;
-            bottom: 1px; /* 将此值更改为所需的上移距离 */
+            bottom: 5px; /* 将此值更改为所需的上移距离 */
 
         }
 
@@ -1454,8 +1454,8 @@
 <!--                                </select>-->
 <!--                            </div>-->
 <!--                        </div>-->
-                        <textarea class="inputTextClass areaTextClass" placeholder="无法使用请尝试更换浏览器 手机推荐使用Google Safari 角色性格、回答质量默认居中 调整为极端值会出现胡言乱语或者响应迟钝"
-                            id="systemInput"></textarea>
+                        <textarea class="inputTextClass areaTextClass" placeholder="无法使用请尝试更换浏览器 手机用户使用Google 其他浏览器不保证兼容 图像生成仅供体验 费用较高 切勿频繁请求 角色性格、回答质量默认居中 调整为极端值会出现胡言乱语或者响应迟钝"
+                            id="systemInput" style="font-size: 14px;"></textarea>
                     </div>
                     <div>
                         <span>角色性格</span>
@@ -1645,7 +1645,7 @@
 
         <div class="bottom_wrapper_copy clearfix">
             <div class="message_input_wrapper_copy">
-                <textarea class="message_input_text_copy" spellcheck="false" placeholder="想看什么图" id="chatinput_copy"></textarea>
+                <textarea style="padding-top: 5px;" class="message_input_text_copy" spellcheck="false" placeholder="想看什么图 描述越详细 您就越有可能获得您想要的结果" id="chatinput_copy"></textarea>
                 <div id="voiceRec_copy" style="display:none;">
 
                     <div id="voiceRecSetting_copy">
@@ -3679,7 +3679,7 @@
                     } else if (res.status === 429 && !res.statusText) {
                         notyf.error("API使用超出限额，请检查您的账单！");
                     } else {
-                        notyf.error("请清空聊天记录，然后重新提问，或者将连续对话选项关闭");
+                        notyf.error("请求OpenAI异常");
                     }
                     stopLoading();
                     return;

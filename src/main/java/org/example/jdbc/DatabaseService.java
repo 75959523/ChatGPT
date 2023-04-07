@@ -4,10 +4,17 @@ import org.example.entity.IpInfo;
 import org.example.entity.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class DatabaseService {
@@ -16,16 +23,25 @@ public class DatabaseService {
     private JdbcTemplate jdbcTemplate;
 
     public int addUserInfo(UserInfo userInfo) {
-        int update = jdbcTemplate.update(
-                "insert into user_info(question,address,header,create_time,uuid,answer) values (?, ? ,? ,?, ?, ?)",
-                userInfo.getQuestion(),
-                userInfo.getAddress(),
-                userInfo.getHeader(),
-                userInfo.getCreateTime(),
-                userInfo.getUuid(),
-                userInfo.getAnswer()
+
+        String sql = "insert into user_info(question,address,header,create_time,uuid,answer) values (?, ? ,? ,?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(sql, new String[] {"id"});
+                    ps.setString(1, userInfo.getQuestion());
+                    ps.setString(2, userInfo.getAddress());
+                    ps.setString(3, userInfo.getHeader());
+                    ps.setString(4, userInfo.getCreateTime());
+                    ps.setString(5, userInfo.getUuid());
+                    ps.setString(6, userInfo.getAnswer());
+                    return ps;
+                },
+                keyHolder
         );
-        return update;
+        return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
     public int addIpInfo(IpInfo ipInfo, String location) {

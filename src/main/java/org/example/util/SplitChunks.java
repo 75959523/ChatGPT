@@ -24,7 +24,6 @@ public class SplitChunks {
             }
             startIndex = nextIndex;
         }
-
         return parts;
     }
 }

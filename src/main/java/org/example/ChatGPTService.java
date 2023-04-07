@@ -95,20 +95,8 @@ public class ChatGPTService {
         imageRequestData.setN(2);
         imageRequestData.setSize("1024x1024");
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setQuestion(requestParam);
-        userInfo.setAddress(GetUserInfo.getClientIpAddress(request));
-        userInfo.setCreateTime(GetUserInfo.sdf.format(new Date()));
-        ChatGptThreadPoolExecutor.getInstance().execute(() -> {
-            try {
-                databaseService.addUserInfo(userInfo);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-
-        requestParam = JSON.toJSONString(imageRequestData).replace("\\", "");
-        String image = OpenAIClient.image(requestParam);
+        String requestBody = JSON.toJSONString(imageRequestData).replace("\\", "");
+        String image = OpenAIClient.image(requestBody);
         JSONObject jsonObject = JSONObject.parseObject(image);
         List<Map<String,Object>> stringList = (List<Map<String,Object>>) jsonObject.get("data");
 
@@ -116,6 +104,22 @@ public class ChatGPTService {
         for(int i=0;i<stringList.size();i++){
             arr[i] = stringList.get(i).get("url").toString();
         }
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setQuestion(requestParam);
+        userInfo.setAddress(GetUserInfo.getClientIpAddress(request));
+        userInfo.setCreateTime(GetUserInfo.sdf.format(new Date()));
+
+        ChatGptThreadPoolExecutor.getInstance().execute(() -> {
+            try {
+                int userInfoId = databaseService.addUserInfo(userInfo);
+                for (int i=0;i<arr.length;i++) {
+                    SaveImageFromUrl.execute(arr[i], userInfoId + "_" + (i + 1));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
         return Arrays.toString(arr);
     }

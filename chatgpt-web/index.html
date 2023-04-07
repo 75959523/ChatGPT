@@ -1655,7 +1655,7 @@
                 </div>
             </div>
             <button class="loaded" id="sendbutton_copy">
-                <span>发送</span>
+                <span>图片生成</span>
                 <svg style="margin:0 auto;height:40px;width:100%;">
                     <use xlink:href="#loadingIcon" />
                 </svg>
@@ -3548,7 +3548,7 @@
                     } else if (res.status === 429 && !res.statusText) {
                         notyf.error("API使用超出限额，请检查您的账单！");
                     } else {
-                        notyf.error("请清空聊天记录，然后重新提问，或者将连续对话选项关闭");
+                        notyf.error("请求OpenAI异常");
                     }
                     stopLoading();
                     return;

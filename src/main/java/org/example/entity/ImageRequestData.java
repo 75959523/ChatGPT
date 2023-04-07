@@ -5,6 +5,12 @@ public class ImageRequestData {
     private int n;
     private String size;
 
+    public ImageRequestData (String prompt, int n, String size) {
+        this.prompt = prompt;
+        this.n = n;
+        this.size = size;
+    }
+
     public String getPrompt() {
         return prompt;
     }

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.Future;
+import java.util.stream.IntStream;
 
 @Component
 @RequestMapping("api")
@@ -32,37 +33,29 @@ public class ChatGPTService {
     public void chat(HttpServletRequest request, HttpServletResponse response) {
         String requestParam = BufferedReaderParam.execute(request);
 
-        Future<String> submit = ChatGptThreadPoolExecutor.getInstance().submit(() -> {
-            // 请求OpenAI接口
-            return OpenAIClient.chat(requestParam);
-        });
+        // 请求OpenAI接口
+        Future<String> chatResponseFuture = ChatGptThreadPoolExecutor.getInstance().submit(() -> OpenAIClient.chat(requestParam));
 
-        ChatGptThreadPoolExecutor.getInstance().execute(() -> {
-            try {
-                String finalResult = submit.get();
-                // 采集用户信息
-                getUserInfo.execute(request, requestParam, finalResult);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        String result = getResultFromFuture(chatResponseFuture);
 
-        response.setHeader("Transfer-Encoding", "chunked");
-        response.setCharacterEncoding("UTF-8");
+        // 采集用户信息
+        ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, result));
 
-        try {
-            String result = submit.get();
-            try (PrintWriter out = response.getWriter()) {
-                // 处理返回结果，分块返回前端
-                for (String chunk : SplitChunks.execute(result)) {
-                    out.write(chunk);
-                    out.write("\n\n");
-                    out.flush();
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        configureResponse(response);
+        sendChunksToClient(response, result);
+    }
+
+    @PostMapping("image")
+    @ResponseBody
+    public String getImage(HttpServletRequest request) {
+        String requestParam = getRequestParameter(request);
+        String requestBody = prepareRequestBody(requestParam);
+        Future<String> imageFuture = ChatGptThreadPoolExecutor.getInstance().submit(() -> OpenAIClient.image(requestBody));
+        String imageString = getResultFromFuture(imageFuture);
+        String[] urlArr = extractUrlsFromJson(imageString);
+        saveUserInfoAndImagesAsync(request, requestParam, urlArr);
+
+        return Arrays.toString(urlArr);
     }
 
     @GetMapping(value = "get", produces = "application/json;charset=UTF-8")
@@ -83,44 +76,64 @@ public class ChatGPTService {
         return JSON.toJSONString(OpenAIClient.model(), SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
     }
 
-    @PostMapping(value = "image", produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public String getImage(HttpServletRequest request){
-        String requestParam = BufferedReaderParam.execute(request);
-
-        requestParam = requestParam.substring(requestParam.lastIndexOf("content") + 10, requestParam.lastIndexOf("}]") - 1);
-
-        ImageRequestData imageRequestData = new ImageRequestData();
-        imageRequestData.setPrompt(requestParam);
-        imageRequestData.setN(2);
-        imageRequestData.setSize("1024x1024");
-
-        String requestBody = JSON.toJSONString(imageRequestData).replace("\\", "");
-        String image = OpenAIClient.image(requestBody);
-        JSONObject jsonObject = JSONObject.parseObject(image);
-        List<Map<String,Object>> stringList = (List<Map<String,Object>>) jsonObject.get("data");
-
-        String[] arr = new String[stringList.size()];
-        for(int i=0;i<stringList.size();i++){
-            arr[i] = stringList.get(i).get("url").toString();
+    private String getResultFromFuture(Future<String> responseFuture) {
+        try {
+            return responseFuture.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
+    }
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setQuestion(requestParam);
-        userInfo.setAddress(GetUserInfo.getClientIpAddress(request));
-        userInfo.setCreateTime(GetUserInfo.sdf.format(new Date()));
+    private void configureResponse(HttpServletResponse response) {
+        response.setHeader("Transfer-Encoding", "chunked");
+        response.setCharacterEncoding("UTF-8");
+    }
 
+    private void sendChunksToClient(HttpServletResponse response, String result) {
+        try (PrintWriter out = response.getWriter()) {
+            // 处理返回结果，分块返回前端
+            for (String chunk : SplitChunks.execute(result)) {
+                out.write(chunk);
+                out.write("\n\n");
+                out.flush();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getRequestParameter(HttpServletRequest request) {
+        String requestParam = BufferedReaderParam.execute(request);
+        return requestParam.substring(requestParam.lastIndexOf("content") + 10, requestParam.lastIndexOf("}]") - 1);
+    }
+
+    private String prepareRequestBody(String requestParam) {
+        return JSON.toJSONString(new ImageRequestData(requestParam, 2, "1024x1024")).replace("\\", "");
+    }
+
+    private String[] extractUrlsFromJson(String imageString) {
+        JSONObject jsonObject = JSONObject.parseObject(imageString);
+        List<Map<String, Object>> dataList = (List<Map<String, Object>>) jsonObject.get("data");
+        return dataList.stream().map(data -> data.get("url").toString()).toArray(String[]::new);
+    }
+
+    private void saveUserInfoAndImagesAsync(HttpServletRequest request, String requestParam, String[] urlArr) {
         ChatGptThreadPoolExecutor.getInstance().execute(() -> {
             try {
+                UserInfo userInfo = new UserInfo(requestParam, GetUserInfo.getClientIpAddress(request), GetUserInfo.sdf.format(new Date()));
                 int userInfoId = databaseService.addUserInfo(userInfo);
-                for (int i=0;i<arr.length;i++) {
-                    SaveImageFromUrl.execute(arr[i], userInfoId + "_" + (i + 1));
-                }
+                IntStream.range(0, urlArr.length)
+                        .forEach(index -> {
+                            try {
+                                SaveImageFromUrl.execute(urlArr[index], userInfoId + "_" + (index + 1));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-
-        return Arrays.toString(arr);
     }
 }

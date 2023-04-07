@@ -10,6 +10,16 @@ public class UserInfo {
     private String uuid;
     private String answer;
 
+    public UserInfo() {
+
+    }
+
+    public UserInfo(String question, String address, String createTime) {
+        this.question = question;
+        this.address = address;
+        this.createTime = createTime;
+    }
+
     public int getId() {
         return id;
     }

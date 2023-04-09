@@ -29,13 +29,13 @@ public class ChatGPTService {
     @Autowired
     DatabaseService databaseService;
 
+
     @PostMapping("chat")
     public void chat(HttpServletRequest request, HttpServletResponse response) {
         String requestParam = BufferedReaderParam.execute(request);
 
         // 请求OpenAI接口
         Future<String> chatResponseFuture = ChatGptThreadPoolExecutor.getInstance().submit(() -> OpenAIClient.chat(requestParam));
-
         String result = getResultFromFuture(chatResponseFuture);
 
         // 采集用户信息
@@ -50,9 +50,13 @@ public class ChatGPTService {
     public String getImage(HttpServletRequest request) {
         String requestParam = getRequestParameter(request);
         String requestBody = prepareRequestBody(requestParam);
+
+        //请求OpenAI接口
         Future<String> imageFuture = ChatGptThreadPoolExecutor.getInstance().submit(() -> OpenAIClient.image(requestBody));
         String imageString = getResultFromFuture(imageFuture);
         String[] urlArr = extractUrlsFromJson(imageString);
+
+        //采集用户信息
         saveUserInfoAndImagesAsync(request, requestParam, urlArr);
 
         return Arrays.toString(urlArr);

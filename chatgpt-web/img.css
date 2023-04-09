@@ -1,0 +1,73 @@
+
+.bottom_wrapper_img {
+    position: absolute;
+    width: 100%;
+    background-color: #fff;
+    padding: 5px 5px;
+    bottom: 5px; /* 将此值更改为所需的上移距离 */
+
+}
+
+.bottom_wrapper_img .message_input_wrapper_img {
+    border: none;
+    width: calc(100% - 143px);
+    position: relative;
+    text-align: left;
+
+    z-index: 1;
+}
+
+.bottom_wrapper_img .message_input_wrapper_img .message_input_text_img {
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    resize: none;
+    background: #f6f6f6;
+    color: #24292f;
+    height: 47px;
+    font-size: 16px;
+    max-height: 200px;
+    padding: 13px 0 13px 16px;
+    width: 100%;
+    display: block;
+    transition: background 0.3s;
+}
+
+.bottom_wrapper_img .message_input_wrapper_img .message_input_text_img:focus {
+    background: #f0f0f0;
+}
+
+.bottom_wrapper_img .message_input_wrapper_img .message_input_text_img::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+#sendbutton_img {
+    width: 80px;
+    height: 47px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 3px;
+    background-color: #b8da8b;
+    border: none;
+    padding: 0;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s linear;
+    text-align: center;
+    float: right;
+    position: absolute;
+    right: 65px;
+    bottom: 5px;
+    cursor: not-allowed;
+}
+
+.activeSendBtnImg {
+    background-color: #99c959 !important;
+    cursor: pointer !important;
+}
+
+.activeSendBtnImg:hover {
+    background-color: #90c050 !important;
+}

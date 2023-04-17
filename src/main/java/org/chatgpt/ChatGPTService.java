@@ -43,7 +43,7 @@ public class ChatGPTService {
         String result = getResultFromFuture(chatResponseFuture);
 
         // 采集用户信息
-        ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, result));
+        ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, result, null));
 
         configureResponse(response);
         sendChunksToClient(response, result);
@@ -61,7 +61,7 @@ public class ChatGPTService {
         String[] urlArr = extractUrlsFromJson(imageString);
 
         //采集用户信息
-        saveUserInfoAndImagesAsync(request, requestParam, urlArr);
+        ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, null, urlArr));
 
         return Arrays.toString(urlArr);
     }
@@ -136,24 +136,5 @@ public class ChatGPTService {
         JSONObject jsonObject = JSONObject.parseObject(imageString);
         List<Map<String, Object>> dataList = (List<Map<String, Object>>) jsonObject.get("data");
         return dataList.stream().map(data -> data.get("url").toString()).toArray(String[]::new);
-    }
-
-    private void saveUserInfoAndImagesAsync(HttpServletRequest request, String requestParam, String[] urlArr) {
-        ChatGptThreadPoolExecutor.getInstance().execute(() -> {
-            try {
-                UserInfo userInfo = new UserInfo(requestParam, GetUserInfo.getClientIpAddress(request), GetUserInfo.sdf.format(new Date()));
-                int userInfoId = databaseService.addUserInfo(userInfo);
-                IntStream.range(0, urlArr.length)
-                        .forEach(index -> {
-                            try {
-                                SaveImageFromUrl.execute(urlArr[index], userInfoId + "_" + (index + 1));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 }

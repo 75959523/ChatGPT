@@ -195,7 +195,7 @@
                     <div class="presetSelect presetModelCls">
                         <label for="preSetModel">GPT模型</label>
                         <select id="preSetModel">
-                            <option value="gpt-3.5-turbo">gpt-3.5</option>
+                            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
                         </select>
                     </div>
 <!--                    <div>-->
@@ -221,7 +221,7 @@
 <!--                                </select>-->
 <!--                            </div>-->
 <!--                        </div>-->
-                        <textarea class="inputTextClass areaTextClass" placeholder="无法使用请更换浏览器 手机用户使用Google 其他浏览器不保证兼容 图像生成仅供体验 费用较高 切勿频繁请求 角色性格、回答质量默认居中 调整为极端值会出现胡言乱语或者响应迟钝"
+                        <textarea class="inputTextClass areaTextClass" placeholder="无法使用请更换浏览器 手机用户使用Google 其他浏览器不保证兼容 图像生成仅供体验 费用较高 切勿频繁请求"
                             id="systemInput" style="font-size: 14px;"></textarea>
                     </div>
                     <div>
@@ -254,13 +254,6 @@
                         <label class="switch-slide">
                             <input type="checkbox" id="enableCont" checked hidden />
                             <label for="enableCont" class="switch-slide-label"></label>
-                        </label>
-                    </div>
-                    <div>
-                        <span class="inlineTitle">长回复</span>
-                        <label class="switch-slide">
-                            <input type="checkbox" id="enableLongReply" hidden />
-                            <label for="enableLongReply" class="switch-slide-label"></label>
                         </label>
                     </div>
                 </div>
@@ -424,8 +417,6 @@
 
     </div>
 
-
-
     <link rel="stylesheet" href="//cdn.staticfile.org/notyf/3.10.0/notyf.min.css">
     <script src="//cdn.staticfile.org/notyf/3.10.0/notyf.min.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
@@ -434,32 +425,10 @@
     <script src="//cdn.staticfile.org/KaTeX/0.16.4/katex.min.js"></script>
     <script src="//npm.elemecdn.com/markdown-it-texmath@1.0.0/texmath.js"></script>
     <script src="//npm.elemecdn.com/markdown-it-link-attributes@4.0.1/dist/markdown-it-link-attributes.min.js"></script>
-    <script type="text/javascript" src="js/core.js"></script>
+    <script type="text/javascript" src="js/chat.js"></script>
+    <script type="text/javascript" src="js/img.js"></script>
+    <script type="text/javascript" src="js/ws.js"></script>
 
-    <script>
-
-        const socket = new WebSocket('ws://localhost:8080/ws');
-
-        socket.addEventListener('open', (event) => {
-            console.log('WebSocket connection opened:', event);
-            // 发送数据到服务器
-            socket.send('Hello, WebSocket server!');
-        });
-
-        socket.addEventListener('message', (event) => {
-            console.log('WebSocket message received:', event.data);
-            // 处理服务器返回的数据
-        });
-
-        socket.addEventListener('close', (event) => {
-            console.log('WebSocket connection closed:', event);
-        });
-
-        socket.addEventListener('error', (event) => {
-            console.log('WebSocket error:', event);
-        });
-
-    </script>
     <link href="//cdn.staticfile.org/github-markdown-css/5.2.0/github-markdown-light.min.css" rel="stylesheet">
     <link href="//cdn.staticfile.org/highlight.js/11.7.0/styles/github.min.css" rel="stylesheet">
     <link href="//cdn.staticfile.org/KaTeX/0.16.4/katex.min.css" rel="stylesheet">

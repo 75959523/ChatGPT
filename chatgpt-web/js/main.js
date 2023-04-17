@@ -29,7 +29,6 @@ const sendBtnEle = document.getElementById("sendbutton");
 const textarea = document.getElementById("chatinput");
 const settingEle = document.getElementById("setting");
 const dialogEle = document.getElementById("setDialog");
-//const systemEle = document.getElementById("systemInput");
 const speechServiceEle = document.getElementById("preSetService");
 const newChatEle = document.getElementById("newChat");
 const chatListEle = document.getElementById("chatList");

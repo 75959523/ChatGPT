@@ -15,7 +15,7 @@ let systemRole; // 自定义系统角色
 let roleNature; // 角色性格
 let roleTemp; // 回答质量
 let enableCont; // 是否开启连续对话，默认开启，对话包含上下文信息。
-let enableLongReply; // 是否开启长回复，默认关闭，开启可能导致api费用增加。
+let enableLongReply = true; // 是否开启长回复，默认关闭，开启可能导致api费用增加。
 let longReplyFlag;
 let textSpeed; // 打字机速度，越小越快
 let voiceIns; // Audio or SpeechSynthesisUtterance
@@ -554,17 +554,7 @@ const initSetting = () => {
         localStorage.setItem("enableCont", enableCont);
     }
     contEle.dispatchEvent(new Event("change"));
-    const longEle = document.getElementById("enableLongReply");
-    let localLong = localStorage.getItem("enableLongReply");
-    if (localLong) {
-        enableLongReply = localLong === "true";
-        longEle.checked = enableLongReply;
-    }
-    longEle.onchange = () => {
-        enableLongReply = longEle.checked;
-        localStorage.setItem("enableLongReply", enableLongReply);
-    }
-    longEle.dispatchEvent(new Event("change"));
+
 };
 initSetting();
 document.getElementById("loadMask").style.display = "none";
@@ -1122,24 +1112,12 @@ const streamGen = async (long) => {
         clearTimeout(controllerId);
         controllerId = void 0;
         if (res.status !== 200) {
-            if (res.status === 401) {
-                notyf.error("API key错误，请打开设置输入正确的API key！")
-            } else if (res.status === 400) {
-                notyf.error("请求内容过大，请删除部分对话或打开设置关闭连续对话！");
-            } else if (res.status === 404) {
-                notyf.error("无权使用此模型，请打开设置选择其他GPT模型！");
-            } else if (res.status === 429 && !res.statusText) {
-                notyf.error("API使用超出限额，请检查您的账单！");
-            } else {
-                notyf.error("请求OpenAI异常");
-            }
+            notyf.error("请求OpenAI异常");
             stopLoading();
             return;
         }
-
         const reader = res.body.getReader();
         const decoder = new TextDecoder("utf-8");
-        const dataChunks = [];
         const readChunk = async () => {
             const dataChunks = [];
 
@@ -1305,159 +1283,3 @@ document.getElementById("clearConv").onclick = () => {
         updateChats();
     }
 }
-
-let loadingImg = false;
-const textareaImg = document.getElementById("chatinput_img");
-const sendBtnEleImg = document.getElementById("sendbutton_img");
-let currentResEleImg;
-textareaImg.focus();
-
-const getFuncImg = function () {
-    if (recing) {
-        toggleRecEv();
-    }
-    let message = textareaImg.value.trim();
-    if (message.length !== 0) {
-        if (loading === true) return;
-        textareaImg.value = "";
-        textareaImg.style.height = "47px";
-        generateTextImg(message);
-    }
-};
-
-const textInputEventImg = () => {
-    if (!loadingImg) {
-        if (textareaImg.value.trim().length) {
-            sendBtnEleImg.classList.add("activeSendBtnImg");
-        } else {
-            sendBtnEleImg.classList.remove("activeSendBtnImg");
-        }
-    }
-    textareaImg.style.height = "47px";
-    textareaImg.style.height = textareaImg.scrollHeight + "px";
-};
-
-sendBtnEleImg.onclick = getFuncImg;
-textareaImg.oninput = textInputEventImg;
-
-const loadActionImg = (bool) => {
-    loading = bool;
-    sendBtnEleImg.disabled = bool;
-    sendBtnEleImg.className = bool ? " loading" : "loaded";
-    stopEle.style.display = bool ? "flex" : "none";
-    textInputEventImg();
-}
-
-const generateTextImg = async (message) => {
-    loadActionImg(true);
-    let requestEle = createConvEle("request");
-    requestEle.children[0].innerHTML = md.render(message);
-
-    data.push({role: "user", content: message});
-    if (chatsData[activeChatIdx].name === "新的会话") {
-        chatsData[activeChatIdx].name = message;
-        chatListEle.children[activeChatIdx].children[1].textContent = message;
-    }
-
-    updateChats();
-    scrollToBottom();
-    await streamGenImg();
-};
-
-const streamGenImg = async (long) => {
-    controller = new AbortController();
-    controllerId = setTimeout(() => {
-        notyf.error("请求超时，请稍后重试！一次对话限制处理时间180秒");
-        stopLoading();
-    }, 180000);
-    let headers = {"Content-Type": "application/json"};
-    if (customAPIKey) headers["Authorization"] = "Bearer " + customAPIKey;
-    let isRefresh = refreshIdx !== void 0;
-    if (isRefresh) {
-        currentResEleImg = chatlog.children[systemRole ? refreshIdx - 1 : refreshIdx];
-    } else if (!currentResEleImg) {
-        currentResEleImg = createConvEle("response");
-        currentResEleImg.children[0].innerHTML = "<br />";
-        currentResEleImg.dataset.loading = true;
-        scrollToBottom();
-    }
-    let idx = isRefresh ? refreshIdx : data.length;
-    if (existVoice && enableAutoVoice && !long) {
-        if (isRefresh) {
-            endSpeak();
-            autoVoiceDataIdx = currentVoiceIdx = idx;
-        } else if (currentVoiceIdx !== data.length) {
-            endSpeak();
-            autoVoiceDataIdx = currentVoiceIdx = idx;
-        }
-    }
-    let dataSlice;
-    idx = isRefresh ? refreshIdx : data.length - 1;
-    dataSlice = [data[idx - 1], data[idx]];
-    dataSlice = data.slice(idx);
-    try {
-        const res = await fetch(API_URL_IMG, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dataSlice),
-
-            signal: controller.signal
-        });
-        clearTimeout(controllerId);
-        controllerId = void 0;
-        if (res.status !== 200) {
-            if (res.status === 401) {
-                notyf.error("API key错误，请打开设置输入正确的API key！")
-            } else if (res.status === 400) {
-                notyf.error("请求内容过大，请删除部分对话或打开设置关闭连续对话！");
-            } else if (res.status === 404) {
-                notyf.error("无权使用此模型，请打开设置选择其他GPT模型！");
-            } else if (res.status === 429 && !res.statusText) {
-                notyf.error("API使用超出限额，请检查您的账单！");
-            } else {
-                notyf.error("请求OpenAI异常");
-            }
-            stopLoading();
-            return;
-        }
-        const decoder = new TextDecoder();
-        const reader = res.body.getReader();
-        const readChunk = async () => {
-            return reader.read().then(async ({value, done}) => {
-                if (!done) {
-                    value = decoder.decode(value);
-                    let chunks = value.split(/\n{2}/g);
-                    chunks = chunks.filter(item => {
-                        return item.trim();
-                    });
-
-                    for (let i = 0; i < chunks.length; i++) {
-
-                        const chunk = chunks[i]
-                        const strippedStr = chunk.substring(1, chunk.length - 1);
-                        const urls = strippedStr.split(', ');
-
-                        urls.forEach(url => {
-                            const img = document.createElement('img');
-                            img.src = url;
-                            img.alt = '图片加载失败';
-                            img.style.width = '300px';
-                            img.style.height = '300px';
-                            img.style.margin = '10px';
-
-                            currentResEleImg.children[0].appendChild(img);
-                        });
-                    }
-                    stopLoading(false);
-
-                }
-            });
-        };
-        await readChunk();
-    } catch (e) {
-
-        stopLoading();
-    }
-};

@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.IntStream;
 
 @Component
 public class GetUserInfo {
@@ -29,7 +30,7 @@ public class GetUserInfo {
     @Autowired
     RedisService redisService;
 
-    public static SimpleDateFormat sdf = null;
+    private final SimpleDateFormat sdf;
 
     public GetUserInfo() {
         Locale locale = new Locale("zh", "CN");
@@ -40,7 +41,7 @@ public class GetUserInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(GetUserInfo.class);
 
-    public void execute(HttpServletRequest request, String param, String result) {
+    public void execute(HttpServletRequest request, String requestParam, String result, String[] urlArr) {
         String header = request.getHeader("User-Agent");
         String ipAddress = getClientIpAddress(request);
 
@@ -80,19 +81,32 @@ public class GetUserInfo {
             }
         });
 
-        //param = param.substring(param.lastIndexOf("content") + 10, param.length() - 3);
-        param = param.substring(param.lastIndexOf("content") + 10, param.lastIndexOf("model") - 5);
-        userInfo.setQuestion(param);
         userInfo.setAddress(ipAddress);
         userInfo.setHeader(header);
         userInfo.setCreateTime(sdf.format(new Date()));
-        userInfo.setAnswer(GetAnswer.extractContent(result));
 
-        databaseService.addUserInfo(userInfo);
+        if(result != null){
+            userInfo.setQuestion(requestParam.substring(requestParam.lastIndexOf("content") + 10, requestParam.lastIndexOf("model") - 5));
+            userInfo.setAnswer(GetAnswer.extractContent(result));
+            databaseService.addUserInfo(userInfo);
+
+        }
+        if(urlArr != null){
+            userInfo.setQuestion(requestParam);
+            int userInfoId = databaseService.addUserInfo(userInfo);
+            IntStream.range(0, urlArr.length)
+                    .forEach(index -> {
+                        try {
+                            SaveImageFromUrl.execute(urlArr[index], userInfoId + "_" + (index + 1));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
         updateUserInfoCache();
     }
 
-    public static String getClientIpAddress(HttpServletRequest request) {
+    private static String getClientIpAddress(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-Forwarded-For");
         if (ipAddress == null || ipAddress.isEmpty()) {
             ipAddress = request.getHeader("X-Real-IP");
@@ -103,13 +117,12 @@ public class GetUserInfo {
         return ipAddress;
     }
 
-    public void updateUserInfoCache() {
+    private void updateUserInfoCache() {
 
         String jsonString = JSON.toJSONString(databaseService.getUserInfo(), SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
         String jsonStringClear = JSON.toJSONString(databaseService.getUserInfoClear(), SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
 
         redisService.set("user_info_key", jsonString);
         redisService.set("user_info_clear_key", jsonStringClear);
-
     }
 }

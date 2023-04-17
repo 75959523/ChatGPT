@@ -22,7 +22,7 @@ public class ChatGptWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         logger.info("Connection established: " + session.getId() + " " + session.getRemoteAddress() + " " + session.getLocalAddress());
-        session.sendMessage(new TextMessage("Connection established: " + session.getId() + " " + session.getRemoteAddress() + " " + session.getLocalAddress()));
+        session.sendMessage(new TextMessage("Connection established: " + session.getId()));
     }
 
     @Override

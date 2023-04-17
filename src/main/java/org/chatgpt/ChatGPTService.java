@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.chatgpt.entity.ImageRequestData;
-import org.chatgpt.entity.UserInfo;
 import org.chatgpt.jdbc.DatabaseService;
 import org.chatgpt.openai.OpenAIClient;
 import org.chatgpt.redis.RedisService;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.Future;
-import java.util.stream.IntStream;
 
 @Component
 @RequestMapping("api")

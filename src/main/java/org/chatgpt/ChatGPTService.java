@@ -94,6 +94,12 @@ public class ChatGPTService {
         return JSON.toJSONString(OpenAIClient.model(), SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
     }
 
+    @GetMapping(value = "billing", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String getBilling(){
+        return JSON.toJSONString(OpenAIClient.billing(), SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+    }
+
     private String getResultFromFuture(Future<String> responseFuture) {
         try {
             return responseFuture.get();

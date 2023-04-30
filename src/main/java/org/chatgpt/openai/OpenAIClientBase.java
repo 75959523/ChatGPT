@@ -18,6 +18,7 @@ public class OpenAIClientBase {
     public static final String TARGET_URL_CHAT = "https://api.openai.com/v1/chat/completions";
     public static final String TARGET_URL_MODEL = "https://api.openai.com/v1/models";
     public static final String TARGET_URL_IMAGE = "https://api.openai.com/v1/images/generations";
+    public static final String TARGET_URL_BILLING = "https://api.openai.com/dashboard/billing/credit_grants";
 
     public static String execute(String requestParam, String requestType, String targetUrl) {
 

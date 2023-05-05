@@ -9,6 +9,7 @@ public class UserInfo {
     private String createTime;
     private String uuid;
     private String answer;
+    private String model;
 
     public UserInfo() {
 
@@ -74,5 +75,13 @@ public class UserInfo {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 }

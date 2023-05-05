@@ -21,7 +21,7 @@ public class DatabaseService {
 
     public int addUserInfo(UserInfo userInfo) {
 
-        String sql = "insert into user_info(question,address,header,create_time,uuid,answer) values (?, ? ,? ,?, ?, ?)";
+        String sql = "insert into user_info(question,address,header,create_time,uuid,answer,model) values (?, ? ,? ,?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -34,6 +34,7 @@ public class DatabaseService {
                     ps.setString(4, userInfo.getCreateTime());
                     ps.setString(5, userInfo.getUuid());
                     ps.setString(6, userInfo.getAnswer());
+                    ps.setString(7, userInfo.getModel());
                     return ps;
                 },
                 keyHolder
@@ -79,6 +80,7 @@ public class DatabaseService {
                 " SELECT " +
                 " u.question, " +
                 " u.answer, " +
+                " u.model," +
                 " u.address, " +
                 " i.location, " +
                 " i.country, " +

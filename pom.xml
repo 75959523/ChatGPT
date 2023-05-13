@@ -98,6 +98,12 @@
       <artifactId>spring-boot-starter-websocket</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.knuddels</groupId>
+      <artifactId>jtokkit</artifactId>
+      <version>0.2.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>

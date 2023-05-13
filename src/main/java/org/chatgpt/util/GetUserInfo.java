@@ -87,7 +87,7 @@ public class GetUserInfo {
 
         if(result != null){
             userInfo.setQuestion(requestParam.substring(requestParam.lastIndexOf("content") + 10, requestParam.lastIndexOf("model") - 5));
-            userInfo.setAnswer(GetAnswer.extractContent(result));
+            userInfo.setAnswer(GetResponseText.execute(result));
             userInfo.setModel(requestParam.substring(requestParam.lastIndexOf("model") + 8, requestParam.lastIndexOf("stream") - 3));
             databaseService.addUserInfo(userInfo);
 

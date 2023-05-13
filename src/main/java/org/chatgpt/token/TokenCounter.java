@@ -19,6 +19,8 @@ public class TokenCounter {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenCounter.class);
 
+    private static final DecimalFormat df = new DecimalFormat("#.##########");
+
     public static String sumToken(String request, String result, long beginTime){
 
         DecimalFormat df = new DecimalFormat("0.00");
@@ -48,7 +50,6 @@ public class TokenCounter {
         return msg;
     }
 
-
     public static List<Map<String,String>> stringToList(String requestMsg){
         JSONArray jsonArray = JSON.parseArray(requestMsg);
         List<Map> messageArray = JSONObject.parseArray(jsonArray.toJSONString(), Map.class);
@@ -65,28 +66,22 @@ public class TokenCounter {
 
     public static String requestPrice(int tokenNum, String model) {
         double price = 0;
-        String formattedPrice;
         if(model.equals("gpt-3.5-turbo")) {
             price = tokenNum * 0.001 * 0.002;
         } else if (model.equals("gpt-4")) {
             price = tokenNum * 0.001 * 0.03;
 
         }
-        DecimalFormat df = new DecimalFormat("#.###############");
-        formattedPrice = df.format(price) + "$";
-        return formattedPrice;
+        return df.format(price) + "$";
     }
 
     public static String responsePrice(int tokenNum, String model) {
         double price = 0;
-        String formattedPrice;
         if(model.equals("gpt-3.5-turbo")) {
             price = tokenNum * 0.001 * 0.002;
         } else if (model.equals("gpt-4")) {
             price = tokenNum * 0.001 * 0.06;
         }
-        DecimalFormat df = new DecimalFormat("#.##########");
-        formattedPrice = df.format(price) + "$";
-        return formattedPrice;
+        return df.format(price) + "$";
     }
 }

@@ -108,7 +108,6 @@ public class ChatGPTService {
 
     private String getResultFromFuture(Future<String> responseFuture) {
         try {
-            System.out.println("a");
             return responseFuture.get();
         } catch (Exception e) {
             e.printStackTrace();

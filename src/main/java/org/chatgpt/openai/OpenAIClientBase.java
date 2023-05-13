@@ -14,7 +14,7 @@ public class OpenAIClientBase {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenAIClientBase.class);
 
-    public static final String API_KEY = "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";
+    public static final String API_KEY = "";
     public static final String TARGET_URL_CHAT = "https://api.openai.com/v1/chat/completions";
     public static final String TARGET_URL_MODEL = "https://api.openai.com/v1/models";
     public static final String TARGET_URL_IMAGE = "https://api.openai.com/v1/images/generations";

@@ -6,10 +6,13 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.chatgpt.entity.ImageRequestData;
 import org.chatgpt.jdbc.DatabaseService;
 import org.chatgpt.openai.OpenAIClient;
+import org.chatgpt.openai.OpenAIClientBase;
 import org.chatgpt.redis.RedisService;
 import org.chatgpt.threadpool.ChatGptThreadPoolExecutor;
 import org.chatgpt.token.TokenCounter;
 import org.chatgpt.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +36,8 @@ public class ChatGPTService {
     @Autowired
     private RedisService redisService;
 
+    private static final Logger logger = LoggerFactory.getLogger(ChatGPTService.class);
+
     @PostMapping("chat")
     public void chat(HttpServletRequest request, HttpServletResponse response) {
         String requestParam = BufferedReaderParam.execute(request);
@@ -46,7 +51,7 @@ public class ChatGPTService {
              String msg = TokenCounter.sumToken(requestParam, result, beginTime);
 
             //采集用户信息
-            ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, result, null));
+            ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, result, null, msg));
 
             sendChunksToClient(response, result, msg);
         }
@@ -65,14 +70,15 @@ public class ChatGPTService {
         String[] urlArr = extractUrlsFromJson(imageString);
 
         //采集用户信息
-        ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, null, urlArr));
+        ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, null, urlArr, null));
 
         return Arrays.toString(urlArr);
     }
 
     @GetMapping(value = "get", produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String getUserInfo() {
+    public String getUserInfo(HttpServletRequest request) {
+        logger.info("查询IP:" + GetUserInfo.getClientIpAddress(request));
         Object cachedData = redisService.get("user_info_key");
         if (cachedData != null) {
             return (String) cachedData;
@@ -84,7 +90,8 @@ public class ChatGPTService {
 
     @GetMapping(value = "getClear", produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String getUserInfoClear(){
+    public String getUserInfoClear(HttpServletRequest request){
+        logger.info("查询IP:" + GetUserInfo.getClientIpAddress(request));
         Object cachedData = redisService.get("user_info_clear_key");
         if (cachedData != null) {
             return (String) cachedData;

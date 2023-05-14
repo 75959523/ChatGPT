@@ -26,10 +26,8 @@ public class TokenCounter {
         DecimalFormat df = new DecimalFormat("0.00");
         String time = df.format((double)(System.currentTimeMillis() - beginTime) / 1000);
 
-        String model = request.substring(request.lastIndexOf("model") + 8, request.lastIndexOf("stream") - 3);
-        String requestMsg = request.substring(request.indexOf("messages") + 10, request.lastIndexOf("model") - 2);
-
-        List<Map<String, String>> messageList = stringToList(requestMsg);
+        String model = getModel(request);
+        List<Map<String, String>> messageList = getMessageList(request);
 
         String responseText = GetResponseText.execute(result);
         logger.info("响应内容:" + responseText);
@@ -46,8 +44,17 @@ public class TokenCounter {
                 ", token = " + token +
                 ", 请求费用: " + requestPrice(prompt, model) +
                 ", 响应费用: " + responsePrice(completion, model);
-        logger.info(msg);
+        logger.info(msg.replace("\n\n", ""));
         return msg;
+    }
+
+    private static String getModel(String request) {
+        return request.substring(request.lastIndexOf("model") + 8, request.lastIndexOf("stream") - 3);
+    }
+
+    private static List<Map<String, String>> getMessageList(String request) {
+        String requestMsg = request.substring(request.indexOf("messages") + 10, request.lastIndexOf("model") - 2);
+        return stringToList(requestMsg);
     }
 
     public static List<Map<String,String>> stringToList(String requestMsg){

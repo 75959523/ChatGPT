@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 public class OpenAIClientBase {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenAIClientBase.class);
-
     public static final String API_KEY = "";
     public static final String TARGET_URL_CHAT = "https://api.openai.com/v1/chat/completions";
     public static final String TARGET_URL_MODEL = "https://api.openai.com/v1/models";
@@ -22,9 +21,8 @@ public class OpenAIClientBase {
 
     public static String execute(String requestParam, String requestType, String targetUrl) {
 
-        logger.info("请求参数：" + requestParam);
+        logger.info("请求参数:" + requestParam);
         StringBuilder content = new StringBuilder();
-        long begin = System.currentTimeMillis();
         try {
             URL url = new URL(targetUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -51,7 +49,6 @@ public class OpenAIClientBase {
             logger.error("请求OpenAI异常：", e);
             return "error";
         }
-        logger.info("请求OpenAI耗时：" + (System.currentTimeMillis() - begin) + " ms");
         return content.toString();
     }
 

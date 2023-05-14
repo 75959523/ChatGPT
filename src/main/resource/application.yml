@@ -15,6 +15,10 @@ spring:
     port: 6379
     password: 1234
 
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} [%thread] %-5level %logger - %msg%n"
+
 #logging:
 #  level:
 #    org:

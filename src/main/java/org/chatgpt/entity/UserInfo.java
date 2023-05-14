@@ -10,7 +10,7 @@ public class UserInfo {
     private String uuid;
     private String answer;
     private String model;
-
+    private String msg;
     public UserInfo() {
 
     }
@@ -83,5 +83,12 @@ public class UserInfo {
 
     public void setModel(String model) {
         this.model = model;
+    }
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }

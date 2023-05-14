@@ -41,7 +41,7 @@ public class GetUserInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(GetUserInfo.class);
 
-    public void execute(HttpServletRequest request, String requestParam, String result, String[] urlArr) {
+    public void execute(HttpServletRequest request, String requestParam, String result, String[] urlArr, String msg) {
         String header = request.getHeader("User-Agent");
         String ipAddress = getClientIpAddress(request);
 
@@ -89,6 +89,7 @@ public class GetUserInfo {
             userInfo.setQuestion(requestParam.substring(requestParam.lastIndexOf("content") + 10, requestParam.lastIndexOf("model") - 5));
             userInfo.setAnswer(GetResponseText.execute(result));
             userInfo.setModel(requestParam.substring(requestParam.lastIndexOf("model") + 8, requestParam.lastIndexOf("stream") - 3));
+            userInfo.setMsg(msg.replace("\n\n" , ""));
             databaseService.addUserInfo(userInfo);
 
         }
@@ -107,7 +108,7 @@ public class GetUserInfo {
         updateUserInfoCache();
     }
 
-    private static String getClientIpAddress(HttpServletRequest request) {
+    public static String getClientIpAddress(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-Forwarded-For");
         if (ipAddress == null || ipAddress.isEmpty()) {
             ipAddress = request.getHeader("X-Real-IP");

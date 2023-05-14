@@ -77,7 +77,6 @@ public class TokenCounter {
             price = tokenNum * 0.001 * 0.002;
         } else if (model.equals("gpt-4")) {
             price = tokenNum * 0.001 * 0.03;
-
         }
         return df.format(price) + "$";
     }

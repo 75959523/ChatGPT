@@ -6,7 +6,6 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.chatgpt.entity.ImageRequestData;
 import org.chatgpt.jdbc.DatabaseService;
 import org.chatgpt.openai.OpenAIClient;
-import org.chatgpt.openai.OpenAIClientBase;
 import org.chatgpt.redis.RedisService;
 import org.chatgpt.threadpool.ChatGptThreadPoolExecutor;
 import org.chatgpt.token.TokenCounter;

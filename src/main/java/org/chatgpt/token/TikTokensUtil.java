@@ -139,7 +139,7 @@ public class TikTokensUtil {
     }
 
     public static void main(String[] args) {
-        String text = "123";
+        String text = "";
         List<Integer> encode = TikTokensUtil.encode(EncodingType.CL100K_BASE, text);
         long tokens = TikTokensUtil.tokens(EncodingType.CL100K_BASE, text);
         System.out.println(encode);

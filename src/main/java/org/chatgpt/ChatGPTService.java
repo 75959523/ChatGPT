@@ -39,22 +39,32 @@ public class ChatGPTService {
 
     @PostMapping("chat")
     public void chat(HttpServletRequest request, HttpServletResponse response) {
-        String requestParam = BufferedReaderParam.execute(request);
+        try {
+            String requestParam = BufferedReaderParam.execute(request);
 
-        //请求OpenAI接口
-        long beginTime = System.currentTimeMillis();
-        Future<String> chatResponseFuture = ChatGptThreadPoolExecutor.getInstance().submit(() -> OpenAIClient.chat(requestParam));
-        String result = getResultFromFuture(chatResponseFuture);
-        if(!"error".equals(result)) {
-            //费用统计
-             String msg = TokenCounter.sumToken(requestParam, result, beginTime);
+            //请求OpenAI接口并获取结果
+            long begin = System.currentTimeMillis();
+            Future<String> chatResponseFuture = ChatGptThreadPoolExecutor.getInstance().submit(() -> OpenAIClient.chat(requestParam));
+            String result = getResultFromFuture(chatResponseFuture);
 
-            //采集用户信息
-            ChatGptThreadPoolExecutor.getInstance().execute(() -> getUserInfo.execute(request, requestParam, result, null, msg));
+            if (!"500".equals(result)) {
+                String time = CalculateTimeElapsed.format(begin);
 
-            sendChunksToClient(response, result, msg);
+                //费用统计
+                String msg = TokenCounter.sumToken(requestParam, result, time);
+
+                //采集用户信息
+                submitUserInfoTask(request, requestParam, result, msg);
+
+                //处理返回结果 分块返回前端
+                sendChunksToClient(response, result, msg);
+            } else {
+                errorResponse(response);
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected exception occurred", e);
+            errorResponse(response);
         }
-        errorResponse(response);
     }
 
     @PostMapping("image")
@@ -129,27 +139,10 @@ public class ChatGPTService {
         response.setCharacterEncoding("UTF-8");
 
         try (PrintWriter out = response.getWriter()) {
-            // 处理返回结果，分块返回前端
             List<String> list = SplitChunks.execute(result);
+            List<String> strings = addMsgToResponse(list, msg);
 
-            String s = list.get(list.size() - 2);
-            String done = list.get(list.size() - 1);
-            String str = s.substring(s.indexOf("data: ") + 6);
-            JSONObject jsonObject = JSONObject.parseObject(str);
-            jsonObject.getJSONArray("choices")
-                    .getJSONObject(0)
-                    .getJSONObject("delta")
-                    .put("content", msg);
-            jsonObject.getJSONArray("choices")
-                    .getJSONObject(0)
-                    .put("finish_reason", null);
-            String s1 = jsonObject.toJSONString();
-            s1 = "data: " + s1;
-            list.set(list.size() - 2,s1);
-            list.set(list.size() - 1,s);
-            list.add(done);
-
-            for (String chunk : list) {
+            for (String chunk : strings) {
                 out.write(chunk);
                 out.write("\n\n");
                 out.flush();
@@ -157,6 +150,30 @@ public class ChatGPTService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<String> addMsgToResponse(List<String> list, String msg) {
+        String doneBefore = list.get(list.size() - 2);
+        String done = list.get(list.size() - 1);
+        String add = doneBefore.substring(doneBefore.indexOf("data: ") + 6);
+        String re = addMsgToJsonObject(add, msg);
+        re = "data: " + re;
+        list.set(list.size() - 2, re);
+        list.set(list.size() - 1, doneBefore);
+        list.add(done);
+        return list;
+    }
+
+    public String addMsgToJsonObject(String add, String msg) {
+        JSONObject jsonObject = JSONObject.parseObject(add);
+        jsonObject.getJSONArray("choices")
+                .getJSONObject(0)
+                .getJSONObject("delta")
+                .put("content", msg);
+        jsonObject.getJSONArray("choices")
+                .getJSONObject(0)
+                .put("finish_reason", null);
+        return jsonObject.toJSONString();
     }
 
     private String getRequestParameter(HttpServletRequest request) {
@@ -172,5 +189,15 @@ public class ChatGPTService {
         JSONObject jsonObject = JSONObject.parseObject(imageString);
         List<Map<String, Object>> dataList = (List<Map<String, Object>>) jsonObject.get("data");
         return dataList.stream().map(data -> data.get("url").toString()).toArray(String[]::new);
+    }
+
+    private void submitUserInfoTask(HttpServletRequest request, String requestParam, String result, String msg) {
+        ChatGptThreadPoolExecutor.getInstance().execute(() -> {
+            try {
+                getUserInfo.execute(request, requestParam, result, null, msg);
+            } catch (Exception e) {
+                logger.error("Exception occurred while getting user info", e);
+            }
+        });
     }
 }

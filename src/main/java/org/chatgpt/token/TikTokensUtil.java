@@ -32,13 +32,9 @@ public class TikTokensUtil {
         modelMap.put(Model.GPT_4_0314.getValue(), registry.getEncodingForModel(ModelType.GPT_4));
     }
     /**
-     * 通过模型名称计算messages获取编码数组
      * 参考官方的处理逻辑：
-     * <a href=https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb</a>
+     * https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
      *
-     * @param modelName 模型名称
-     * @param messages  消息体
-     * @return tokens数量
      */
     public static int tokens(String modelName, List<Map<String,String>> messages) {
         Encoding encoding = getEncoding(modelName);

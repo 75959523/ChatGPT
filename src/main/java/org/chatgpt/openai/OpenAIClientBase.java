@@ -46,8 +46,8 @@ public class OpenAIClientBase {
             }
 
         } catch (Exception e) {
-            logger.error("请求OpenAI异常：", e);
-            return "error";
+            logger.error("请求OpenAI异常:", e);
+            return "500";
         }
         return content.toString();
     }

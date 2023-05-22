@@ -3,29 +3,25 @@ package org.chatgpt.token;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.chatgpt.util.CalculateTimeElapsed;
+import org.chatgpt.util.FormatPrice;
 import org.chatgpt.util.GetResponseText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TokenCounter {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenCounter.class);
 
-    private static final DecimalFormat df = new DecimalFormat("#.##########");
 
-    public static String sumToken(String request, String result, long beginTime){
+    public static String sumToken(String request, String result, String time){
 
-        DecimalFormat df = new DecimalFormat("0.00");
-        String time = df.format((double)(System.currentTimeMillis() - beginTime) / 1000);
-
+        long begin = System.currentTimeMillis();
         String model = getModel(request);
         List<Map<String, String>> messageList = getMessageList(request);
 
@@ -34,9 +30,17 @@ public class TokenCounter {
 
         int prompt = TikTokensUtil.tokens(model, messageList);
         int completion = TikTokensUtil.tokens(model, responseText);
+        String msg = buildStatisticsMessage(time, model, prompt, completion);
+
+        logger.info(msg.replace("\n\n", ""));
+        logger.info("费用统计耗时:" + CalculateTimeElapsed.format(begin));
+        return msg;
+    }
+
+    private static String buildStatisticsMessage(String time, String model, int prompt, int completion) {
         int token = prompt + completion;
 
-        String msg = "\n\n" +
+        return "\n\n" +
                 "请求OpenAI耗时: " + time + " s" +
                 ", model: " + model +
                 ", prompt: " + prompt +
@@ -44,8 +48,6 @@ public class TokenCounter {
                 ", token = " + token +
                 ", 请求费用: " + requestPrice(prompt, model) +
                 ", 响应费用: " + responsePrice(completion, model);
-        logger.info(msg.replace("\n\n", ""));
-        return msg;
     }
 
     private static String getModel(String request) {
@@ -78,7 +80,7 @@ public class TokenCounter {
         } else if (model.equals("gpt-4")) {
             price = tokenNum * 0.001 * 0.03;
         }
-        return df.format(price) + "$";
+        return FormatPrice.format(price);
     }
 
     public static String responsePrice(int tokenNum, String model) {
@@ -88,6 +90,6 @@ public class TokenCounter {
         } else if (model.equals("gpt-4")) {
             price = tokenNum * 0.001 * 0.06;
         }
-        return df.format(price) + "$";
+        return FormatPrice.format(price);
     }
 }

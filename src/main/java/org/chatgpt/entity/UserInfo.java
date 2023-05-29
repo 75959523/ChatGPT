@@ -1,7 +1,6 @@
 package org.chatgpt.entity;
 
 public class UserInfo {
-
     private int id;
     private String question;
     private String address;
@@ -11,6 +10,7 @@ public class UserInfo {
     private String answer;
     private String model;
     private String msg;
+
     public UserInfo() {
 
     }

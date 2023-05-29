@@ -21,7 +21,7 @@ public class OpenAIClientBase {
 
     public static String execute(String requestParam, String requestType, String targetUrl) {
 
-        logger.info("请求参数:" + requestParam);
+        logger.info("request: " + requestParam);
         StringBuilder content = new StringBuilder();
         try {
             URL url = new URL(targetUrl);
@@ -46,7 +46,7 @@ public class OpenAIClientBase {
             }
 
         } catch (Exception e) {
-            logger.error("请求OpenAI异常:", e);
+            logger.error("Request OpenAI Exceptions:", e);
             return "500";
         }
         return content.toString();

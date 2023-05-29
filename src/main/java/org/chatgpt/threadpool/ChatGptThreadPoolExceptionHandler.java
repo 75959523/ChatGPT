@@ -21,14 +21,14 @@ public class ChatGptThreadPoolExceptionHandler implements RejectedExecutionHandl
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
         if (!(r instanceof RunnableFuture)) {
-            throw new IllegalArgumentException("任务必须是 RunnableFuture 类型");
+            throw new IllegalArgumentException("Task must be of type RunnableFuture");
         }
         RunnableFuture<?> futureTask = (RunnableFuture<?>) r;
-        logger.info("最大线程数已满，将任务放入缓冲队列 " + r.getClass());
+        logger.info("The maximum number of threads is full, put the task into the buffer queue" + r.getClass());
         try {
             buffer.put(futureTask);
         } catch (InterruptedException e) {
-            logger.error("任务放入缓冲队列失败 " + r.getClass(), e);
+            logger.error("Failed to put task into buffer queue" + r.getClass(), e);
         }
     }
 
@@ -37,10 +37,10 @@ public class ChatGptThreadPoolExceptionHandler implements RejectedExecutionHandl
             while (true) {
                 try {
                     RunnableFuture<?> task = buffer.take();
-                    // 如果线程池未关闭，尝试将任务重新提交到线程池。
+                    //If the thread pool is not closed, try to resubmit the task to the thread pool
                     threadPoolExecutor.execute(task);
                 } catch (InterruptedException e) {
-                    logger.error("从缓冲队列中获取任务失败", e);
+                    logger.error("Failed to get task from buffer queue", e);
                 }
             }
         }).start();

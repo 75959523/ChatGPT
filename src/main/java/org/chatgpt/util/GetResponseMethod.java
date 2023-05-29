@@ -3,12 +3,7 @@ package org.chatgpt.util;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class GetResponseText {
+public class GetResponseMethod {
 
     public static String execute(String result) {
         StringBuilder responseText = new StringBuilder();
@@ -45,15 +40,5 @@ public class GetResponseText {
             }
         }
         return responseTextBuilder.toString();
-    }
-
-    public static String extractContent(String input) {
-        List<String> contents = new ArrayList<String>();
-        Pattern pattern = Pattern.compile("\"content\":\"([^\"]*)\"");
-        Matcher matcher = pattern.matcher(input);
-        while (matcher.find()) {
-            contents.add(matcher.group(1));
-        }
-        return String.join("", contents);
     }
 }
